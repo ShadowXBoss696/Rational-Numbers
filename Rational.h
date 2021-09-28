@@ -1,12 +1,13 @@
 #ifndef RATIONAL_H
 #define RATIONAL_H
+
 #include <stdbool.h>
 
-struct _Rational {
-   int Top;
-   int Bottom;
+struct Rational {
+    int Top;
+    int Bottom;
 };
-typedef struct _Rational Rational;
+typedef struct Rational Rational;
 
 //-------------------------------------------------------------------- creator
 /**
@@ -27,7 +28,7 @@ Rational Rational_Construct(int Numerator, int Denominator);
  *   Returns:
  *        A Rational object X such that X + R = 0.
  */
-Rational Rational_Negate(const Rational R);
+Rational Rational_Negate(Rational R);
 
 /**
  *   Compute the arithmetic floor of R.
@@ -36,7 +37,7 @@ Rational Rational_Negate(const Rational R);
  *   Returns:
  *        The largest integer N such that N <= R.
  */
-int Rational_Floor(const Rational R);
+int Rational_Floor(Rational R);
 
 /**
  *   Compute the arithmetic ceiling of R.
@@ -45,7 +46,7 @@ int Rational_Floor(const Rational R);
  *   Returns:
  *        The smallest integer N such that N >= R.
  */
-int Rational_Ceiling(const Rational R);
+int Rational_Ceiling(Rational R);
 
 /**
  *   Round R to the nearest integer.
@@ -54,7 +55,7 @@ int Rational_Ceiling(const Rational R);
  *   Returns:
  *        The closest integer N to R.
  */
-int Rational_Round(const Rational R);
+int Rational_Round(Rational R);
 
 //-------------------------------------------------------------------- binary fns
 /**
@@ -64,7 +65,7 @@ int Rational_Round(const Rational R);
  *   Returns:
  *        A Rational object X equal to Left + Right.
  */
-Rational Rational_Add(const Rational Left, const Rational Right);
+Rational Rational_Add(Rational Left, Rational Right);
 
 /**
  *   Compute the difference of Left and Right.
@@ -73,7 +74,7 @@ Rational Rational_Add(const Rational Left, const Rational Right);
  *   Returns:
  *        A Rational object X equal to Left - Right.
  */
-Rational Rational_Subtract(const Rational Left, const Rational Right);
+Rational Rational_Subtract(Rational Left, Rational Right);
 
 /**
  *   Compute the product of Left and Right.
@@ -82,7 +83,7 @@ Rational Rational_Subtract(const Rational Left, const Rational Right);
  *   Returns:
  *        A Rational object X equal to Left * Right.
  */
-Rational Rational_Multiply(const Rational Left, const Rational Right);
+Rational Rational_Multiply(Rational Left, Rational Right);
 
 /**
  *   Compute the quotient of Left and Right.
@@ -92,7 +93,7 @@ Rational Rational_Multiply(const Rational Left, const Rational Right);
  *   Returns:
  *        A Rational object X equal to Left / Right.
  */
-Rational Rational_Divide(const Rational Left, const Rational Right);
+Rational Rational_Divide(Rational Left, Rational Right);
 
 //-------------------------------------------------------------------- relational fns
 /**
@@ -102,7 +103,7 @@ Rational Rational_Divide(const Rational Left, const Rational Right);
  *   Returns:
  *        True if Left == Right, false otherwise.
  */
-bool Rational_Equals(const Rational Left, const Rational Right);
+bool Rational_Equals(Rational Left, Rational Right);
 
 /**
  *   Determine whether Left and Right are not equal.
@@ -111,7 +112,7 @@ bool Rational_Equals(const Rational Left, const Rational Right);
  *   Returns:
  *        True if Left != Right, false otherwise.
  */
-bool Rational_NotEquals(const Rational Left, const Rational Right);
+bool Rational_NotEquals(Rational Left, Rational Right);
 
 /**
  *   Determine whether Left is less than Right.
@@ -120,7 +121,7 @@ bool Rational_NotEquals(const Rational Left, const Rational Right);
  *   Returns:
  *        True if Left < Right, false otherwise.
  */
-bool Rational_LessThan(const Rational Left, const Rational Right);
+bool Rational_LessThan(Rational Left, Rational Right);
 
 /**
  *   Determine whether Left is less than or equal to Right.
@@ -129,7 +130,7 @@ bool Rational_LessThan(const Rational Left, const Rational Right);
  *   Returns:
  *        True if Left <= Right, false otherwise.
  */
-bool Rational_LessThanOrEqual(const Rational Left, const Rational Right);
+bool Rational_LessThanOrEqual(Rational Left, Rational Right);
 
 /**
  *   Determine whether Left is greater than Right.
@@ -138,7 +139,7 @@ bool Rational_LessThanOrEqual(const Rational Left, const Rational Right);
  *   Returns:
  *        True if Left > Right, false otherwise.
  */
-bool Rational_GreaterThan(const Rational Left, const Rational Right);
+bool Rational_GreaterThan(Rational Left, Rational Right);
 
 /**
  *   Determine whether Left is greater than or equal to Right.
@@ -147,6 +148,6 @@ bool Rational_GreaterThan(const Rational Left, const Rational Right);
  *   Returns:
  *        True if Left >= Right, false otherwise.
  */
-bool Rational_GreaterThanOrEqual(const Rational Left, const Rational Right);
+bool Rational_GreaterThanOrEqual(Rational Left, Rational Right);
 
 #endif
