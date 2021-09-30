@@ -1,10 +1,11 @@
-#include <assert.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 #include "Rational.h"
 
 // Resource: https://courses.cs.vt.edu/cs2505/spring2013/Assignments/9/C_Rational.pdf
 
-static void normalize(Rational *R);
+static void normalize(int Top, int Bottom, int *arr);
 
 static int gcd(int u, int v);
 
@@ -16,13 +17,35 @@ static Rational reciprocal(Rational R);
 
 // Creates and initializes a new Rational object.
 Rational Rational_Construct(const int Numerator, const int Denominator) {
-    assert(Denominator != 0);
 
-    Rational number;
-    number.Top = Numerator;
-    number.Bottom = Denominator;
-    normalize(&number);
-    return number;
+    // Handle zero
+    if(Numerator == 0) {
+        return (Rational) {0, 1};
+    }
+
+    if(Denominator == 0) {
+        printf("Denominator can not be zero.\n");
+        exit(0);
+    }
+
+    int *ptr = (int *) malloc(2 * sizeof(int));
+
+    // Check if the memory has been successfully
+    // allocated by malloc or not
+    if (ptr == NULL) {
+        printf("Memory not allocated.\n");
+        exit(0);
+    } else {
+        // Memory has been successfully allocated
+
+        normalize(Numerator, Denominator, ptr);
+        Rational R = {ptr[0], ptr[1]};
+
+        // Free the memory
+        free(ptr);
+
+        return R;
+    }
 }
 
 //-------------------------------------------------------------------- unary fns
@@ -46,7 +69,7 @@ int Rational_Ceiling(const Rational R) {
 }
 
 // Round R to the nearest integer.
-int Rational_Round(Rational R) {
+int Rational_Round(const Rational R) {
     // Formula: ⌊(x/y + 1/2)⌋
     // Resource: https://stackoverflow.com/questions/67944241/rounding-a-rational-number-to-the-nearest-integer-with-half-up
 
@@ -57,7 +80,7 @@ int Rational_Round(Rational R) {
 //-------------------------------------------------------------------- binary fns
 
 // Compute the sum of Left and Right.
-Rational Rational_Add(Rational Left, Rational Right) {
+Rational Rational_Add(const Rational Left, const Rational Right) {
     // Formula: For a/b + c/d
     // if b = c : Ans = (a + c) / d
     // else : Ans = (a * (lcm/b) + c * (lcm/d))/lcm, where lcm = LCM(b, d)
@@ -77,27 +100,26 @@ Rational Rational_Add(Rational Left, Rational Right) {
 }
 
 // Compute the difference of Left and Right.
-Rational Rational_Subtract(Rational Left, Rational Right) {
+Rational Rational_Subtract(const Rational Left, const Rational Right) {
     // Formula: a/b - c/d = a/b + (- c/d)
 
     return Rational_Add(Left, Rational_Negate(Right));
 }
 
 // Compute the product of Left and Right.
-Rational Rational_Multiply(Rational Left, Rational Right) {
-    normalize(&Left);
-    normalize(&Right);
+Rational Rational_Multiply(const Rational Left, const Rational Right) {
+    // Formula: a/b * c/d = (a * c) / (b * d)
 
-    Rational result;
-    result.Top = Left.Top * Right.Top;
-    result.Bottom = Left.Bottom * Right.Bottom;
+    int Top, Bottom;
 
-    normalize(&result);
-    return result;
+    Top = Left.Top * Right.Top;
+    Bottom = Left.Bottom * Right.Bottom;
+
+    return Rational_Construct(Top, Bottom);
 }
 
 // Compute the quotient of Left and Right.
-Rational Rational_Divide(Rational Left, Rational Right) {
+Rational Rational_Divide(const Rational Left, const Rational Right) {
     // Formula: (a/b) / (c/d) = (a/b) * (d/c)
 
     return Rational_Multiply(Left, reciprocal(Right));
@@ -106,33 +128,43 @@ Rational Rational_Divide(Rational Left, Rational Right) {
 //-------------------------------------------------------------------- relational fns
 
 // Determine whether Left and Right are equal.
-bool Rational_Equals(Rational Left, Rational Right) {
-    return false;
+bool Rational_Equals(const Rational Left, const Rational Right) {
+    return Left.Top == Right.Top && Left.Bottom == Right.Bottom;
 }
 
 // Determine whether Left and Right are not equal.
-bool Rational_NotEquals(Rational Left, Rational Right) {
-    return false;
+bool Rational_NotEquals(const Rational Left, const Rational Right) {
+    return !Rational_Equals(Left, Right);
 }
 
 // Determine whether Left is less than Right.
-bool Rational_LessThan(Rational Left, Rational Right) {
-    return false;
+bool Rational_LessThan(const Rational Left, const Rational Right) {
+    if (Left.Bottom == Right.Bottom) {
+        return Left.Top < Right.Top;
+    } else {
+        const int LCM = lcm(Left.Bottom, Right.Bottom);
+        return Left.Top * (LCM / Left.Bottom) < Right.Top * (LCM / Right.Bottom);
+    }
 }
 
 // Determine whether Left is less than or equal to Right.
-bool Rational_LessThanOrEqual(Rational Left, Rational Right) {
-    return false;
+bool Rational_LessThanOrEqual(const Rational Left, const Rational Right) {
+    return Rational_Equals(Left, Right) || Rational_LessThan(Left, Right);
 }
 
 // Determine whether Left is greater than Right.
-bool Rational_GreaterThan(Rational Left, Rational Right) {
-    return false;
+bool Rational_GreaterThan(const Rational Left, const Rational Right) {
+    if (Left.Bottom == Right.Bottom) {
+        return Left.Top > Right.Top;
+    } else {
+        const int LCM = lcm(Left.Bottom, Right.Bottom);
+        return Left.Top * (LCM / Left.Bottom) > Right.Top * (LCM / Right.Bottom);
+    }
 }
 
 // Determine whether Left is greater than or equal to Right.
-bool Rational_GreaterThanOrEqual(Rational Left, Rational Right) {
-    return false;
+bool Rational_GreaterThanOrEqual(const Rational Left, const Rational Right) {
+    return Rational_Equals(Left, Right) || Rational_GreaterThan(Left, Right);
 }
 
 //-------------------------------------------------------------------- utility fns
@@ -160,28 +192,25 @@ static int lcm(int u, int v) {
 
 // Normalize Rational Numbers
 // Credit: http://web.engr.orst.edu/~tgd/classes/533/code/lib/rational.C
-static void normalize(Rational *R) {
+static void normalize(int Top, int Bottom, int *arr) {
     int sign = 1;
 
-    if (R->Top < 0) {
+    if (Top < 0) {
         sign = -sign;
-        R->Top = -R->Top;
+        Top = -Top;
     }
 
-    if (R->Bottom < 0) {
+    if (Bottom < 0) {
         sign = -sign;
-        R->Bottom = -R->Bottom;
+        Bottom = -Bottom;
     }
-
-    // make sure we are not dividing by zero
-    assert(R->Bottom != 0);
 
     // find the greatest common divisor
-    int d = gcd(R->Top, R->Bottom);
+    int d = gcd(Top, Bottom);
 
     // move sign to top and divide by gcd
-    R->Top = sign * (R->Top / d);
-    R->Bottom = R->Bottom / d;
+    arr[0] = sign * (Top / d);
+    arr[1] = Bottom / d;
 }
 
 static Rational reciprocal(const Rational R) {

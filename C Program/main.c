@@ -20,4 +20,10 @@ int main(int argc, const char *argv[]) {
     Rational_Print("A-B", Rational_Subtract(A, B));
     Rational_Print("A*B", Rational_Multiply(A, B));
     Rational_Print("A/B", Rational_Divide(A, B));
+    printf("A==B -> %s\n", Rational_Equals(A, B) ? "true" : "false");
+    printf("A<>B -> %s\n", Rational_NotEquals(A, B) ? "true" : "false");
+    printf("A<B -> %s\n", Rational_LessThan(A, B) ? "true" : "false");
+    printf("A<=B -> %s\n", Rational_LessThanOrEqual(A, B) ? "true" : "false");
+    printf("A>B -> %s\n", Rational_GreaterThan(A, B) ? "true" : "false");
+    printf("A>=B -> %s\n", Rational_GreaterThanOrEqual(A, B) ? "true" : "false");
 }

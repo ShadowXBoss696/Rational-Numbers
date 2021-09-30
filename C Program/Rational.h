@@ -4,8 +4,8 @@
 #include <stdbool.h>
 
 struct Rational {
-    int Top;
-    int Bottom;
+    const int Top;
+    const int Bottom;
 };
 typedef struct Rational Rational;
 
